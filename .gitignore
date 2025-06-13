@@ -1,2 +1,4 @@
 **/node_modules/
 **/flow
+**/.scannerwork
+scanner.bat
