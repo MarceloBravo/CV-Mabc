@@ -8,6 +8,20 @@ jobs:                                                                     # Defi
   test:                                                                   # Trabajo de pruebas
     name: Test API en Node.js ${{ matrix.node }}                          # Nombre del trabajo con la versión de Node.js
     runs-on: ubuntu-latest                                                # Sistema operativo en el que se ejecutará
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_DB: mabc_cv_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     strategy:                                                             # Estrategia de matriz
       matrix:                                                             # Definición de matriz
         node: [22.x]                                                # Versiones de Node.js a probar
