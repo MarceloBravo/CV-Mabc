@@ -26,6 +26,13 @@ jobs:                                                                     # Defi
       matrix:                                                             # Definición de matriz
         node: [22.x]                                                # Versiones de Node.js a probar
     steps:                                                                # Pasos del trabajo
+      - name: Set environment variables for CI database
+        run: |
+          echo "DB_USER=postgres" >> $GITHUB_ENV
+          echo "DB_PASS=postgres" >> $GITHUB_ENV
+          echo "DB_NAME=mabc_cv_test" >> $GITHUB_ENV
+          echo "DB_HOST=localhost" >> $GITHUB_ENV
+          echo "DB_PORT=5433" >> $GITHUB_ENV
       - name: Checkout del código                                         # Nombre del paso
         uses: actions/checkout@v3                                         # Acción para clonar el repositorio
       - name: Configurar Node.js                                          # Nombre del paso
