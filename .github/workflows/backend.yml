@@ -29,8 +29,8 @@ jobs:                                                                     # Defi
         run: cd backend-cv && npm ci                                      # Comando para instalar dependencias
       - name: Ejecutar tests unitarios
         run: cd backend-cv && npm run test:unit
-      #- name: Ejecutar tests de integración
-      #  run: cd backend-cv && npm run test:integration
+      - name: Ejecutar tests de integración
+        run: cd backend-cv && npm run test:integration
       - name: Reportar éxito
         if: success()
         run: echo "API funcional en Node ${{ matrix.node }} (unitarios e integración OK)"
