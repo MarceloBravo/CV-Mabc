@@ -48,6 +48,8 @@ jobs:                                                                     # Defi
             ${{ runner.os }}-node-                                        # Prefijo de restauración
       - name: Instalar dependencias                                       # Nombre del paso
         run: cd backend-cv && npm ci                                      # Comando para instalar dependencias
+      - name: Ejecutar migraciones
+        run: cd backend-cv && npx sequelize-cli db:migrate
       - name: Ejecutar tests unitarios
         run: cd backend-cv && npm run test:unit
       - name: Ejecutar tests de integración
