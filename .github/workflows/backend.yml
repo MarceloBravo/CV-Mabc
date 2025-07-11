@@ -52,17 +52,17 @@ jobs:                                                                     # Defi
       - name: Crear config.json temporal para Sequelize CLI
         run: |
           cat <<EOF > backend-cv/config/config.json
-{
-  "test": {
-    "username": "${DB_USER}",
-    "password": "${DB_PASS}",
-    "database": "${DB_NAME}",
-    "host": "${DB_HOST}",
-    "port": ${DB_PORT},
-    "dialect": "postgres"
-  }
-}
-EOF
+          {
+            "test": {
+              "username": "${DB_USER}",
+              "password": "${DB_PASS}",
+              "database": "${DB_NAME}",
+              "host": "${DB_HOST}",
+              "port": ${DB_PORT},
+              "dialect": "postgres"
+            }
+          }
+          EOF
 
       - name: Ejecutar migraciones
         run: cd backend-cv && npx sequelize-cli db:migrate
