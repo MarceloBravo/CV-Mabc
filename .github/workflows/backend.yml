@@ -49,9 +49,6 @@ jobs:                                                                     # Defi
       - name: Instalar dependencias                                       # Nombre del paso
         run: cd backend-cv && npm ci                                      # Comando para instalar dependencias
 
-      - name: Borrar config.json temporal
-        run: rm backend-cv/config/config.json
-
       - name: Ejecutar tests unitarios
         run: cd backend-cv && npm run test:unit
 
