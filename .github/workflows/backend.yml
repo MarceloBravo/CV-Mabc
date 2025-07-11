@@ -49,18 +49,20 @@ jobs:                                                                     # Defi
       - name: Instalar dependencias                                       # Nombre del paso
         run: cd backend-cv && npm ci                                      # Comando para instalar dependencias
 
-      - name: Crear config.js temporal para Sequelize CLI
+      - name: Crear config.json temporal para Sequelize CLI
         run: |
-          echo "module.exports = {
-            test: {
-              username: process.env.DB_USER,
-              password: process.env.DB_PASS,
-              database: process.env.DB_NAME,
-              host: process.env.DB_HOST,
-              port: process.env.DB_PORT,
-              dialect: 'postgres'
-            }
-          };" > backend-cv/config/config.js
+          cat <<EOF > backend-cv/config/config.json
+{
+  "test": {
+    "username": "${DB_USER}",
+    "password": "${DB_PASS}",
+    "database": "${DB_NAME}",
+    "host": "${DB_HOST}",
+    "port": ${DB_PORT},
+    "dialect": "postgres"
+  }
+}
+EOF
 
       - name: Ejecutar migraciones
         run: cd backend-cv && npx sequelize-cli db:migrate
@@ -71,8 +73,8 @@ jobs:                                                                     # Defi
           DB_HOST: ${{ env.DB_HOST }}
           DB_PORT: ${{ env.DB_PORT }}
 
-      - name: Borrar config.js temporal
-        run: rm backend-cv/config/config.js
+      - name: Borrar config.json temporal
+        run: rm backend-cv/config/config.json
 
       - name: Ejecutar tests unitarios
         run: cd backend-cv && npm run test:unit
