@@ -48,15 +48,42 @@ jobs:                                                                     # Defi
             ${{ runner.os }}-node-                                        # Prefijo de restauración
       - name: Instalar dependencias                                       # Nombre del paso
         run: cd backend-cv && npm ci                                      # Comando para instalar dependencias
+
+      - name: Crear config.js temporal para Sequelize CLI
+        run: |
+          echo "module.exports = {
+            test: {
+              username: process.env.DB_USER,
+              password: process.env.DB_PASS,
+              database: process.env.DB_NAME,
+              host: process.env.DB_HOST,
+              port: process.env.DB_PORT,
+              dialect: 'postgres'
+            }
+          };" > backend-cv/config/config.js
+
       - name: Ejecutar migraciones
         run: cd backend-cv && npx sequelize-cli db:migrate
+        env:
+          DB_USER: ${{ env.DB_USER }}
+          DB_PASS: ${{ env.DB_PASS }}
+          DB_NAME: ${{ env.DB_NAME }}
+          DB_HOST: ${{ env.DB_HOST }}
+          DB_PORT: ${{ env.DB_PORT }}
+
+      - name: Borrar config.js temporal
+        run: rm backend-cv/config/config.js
+
       - name: Ejecutar tests unitarios
         run: cd backend-cv && npm run test:unit
+
       - name: Ejecutar tests de integración
         run: cd backend-cv && npm run test:integration
+
       - name: Reportar éxito
         if: success()
         run: echo "API funcional en Node ${{ matrix.node }} (unitarios e integración OK)"
+
       - name: Reportar error
         if: failure()
         run: echo "Falla detectada en los tests para Node ${{ matrix.node }} (unitarios o integración)"
