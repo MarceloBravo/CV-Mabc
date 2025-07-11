@@ -64,8 +64,11 @@ jobs:                                                                     # Defi
           }
           EOF
 
+      - name: Verificar contenido de config.json
+        run: cat backend-cv/config/config.json
+
       - name: Ejecutar migraciones
-        run: cd backend-cv && npx sequelize-cli db:migrate
+        run: cd backend-cv && npx sequelize-cli db:migrate --env test
         env:
           DB_USER: ${{ env.DB_USER }}
           DB_PASS: ${{ env.DB_PASS }}
