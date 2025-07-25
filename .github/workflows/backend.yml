@@ -1,13 +1,16 @@
-name: backend                                                             # Nombre del flujo de trabajo
-on:                                                                       # Configuración de activadores
-  push:                                                                   # Activar en eventos de push
-    branches: [main, develop]                                             # Ramas objetivo para el push
-  pull_request:                                                           # Activar en eventos de pull request
-    branches: [main, develop]                                             # Ramas objetivo para el pull request
-jobs:                                                                     # Definición de los trabajos
-  test:                                                                   # Trabajo de pruebas
-    name: Test API en Node.js ${{ matrix.node }}                          # Nombre del trabajo con la versión de Node.js
-    runs-on: ubuntu-latest                                                # Sistema operativo en el que se ejecutará
+name: backend
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: Test API en Node.js ${{ matrix.node }}
+    runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:15
@@ -22,38 +25,59 @@ jobs:                                                                     # Defi
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-    strategy:                                                             # Estrategia de matriz
-      matrix:                                                             # Definición de matriz
-        node: [22.x]                                                # Versiones de Node.js a probar
-    steps:                                                                # Pasos del trabajo
-      - name: Set environment variables for CI database
+
+    strategy:
+      matrix:
+        node: [22.x]
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Cachear dependencias npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Instalar dependencias
+        run: cd backend-cv && npm ci
+
+      - name: Esperar que PostgreSQL esté listo
         run: |
-          echo "DB_USER=postgres" >> $GITHUB_ENV
-          echo "DB_PASS=postgres" >> $GITHUB_ENV
-          echo "DB_NAME=mabc_cv_test" >> $GITHUB_ENV
-          echo "DB_HOST=localhost" >> $GITHUB_ENV
-          echo "DB_PORT=5433" >> $GITHUB_ENV
-      - name: Checkout del código                                         # Nombre del paso
-        uses: actions/checkout@v3                                         # Acción para clonar el repositorio
-      - name: Configurar Node.js                                          # Nombre del paso
-        uses: actions/setup-node@v3                                       # Acción para configurar Node.js
-        with:                                                             # Parámetros de configuración
-          node-version: ${{ matrix.node }}                                # Versión de Node.js según la matriz
-      - name: Cachear dependencias npm                                    # Nombre del paso
-        uses: actions/cache@v3                                            # Acción para cachear dependencias
-        with:                                                             # Parámetros de configuración
-          path: ~/.npm                                                    # Ruta del caché
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # Clave del caché basada en el sistema operativo y el archivo de bloqueo
-          restore-keys: |                                                 # Claves de restauración
-            ${{ runner.os }}-node-                                        # Prefijo de restauración
-      - name: Instalar dependencias                                       # Nombre del paso
-        run: cd backend-cv && npm ci                                      # Comando para instalar dependencias
+          for i in {1..10}; do
+            nc -z localhost 5433 && echo "PostgreSQL está listo" && exit 0
+            echo "Esperando PostgreSQL..."
+            sleep 3
+          done
+          echo "PostgreSQL no respondió" && exit 1
 
       - name: Ejecutar tests unitarios
         run: cd backend-cv && npm run test:unit
+        env:
+          DB_USER: postgres
+          DB_PASS: postgres
+          DB_NAME: mabc_cv_test
+          DB_HOST: localhost
+          DB_PORT: 5433
+          NODE_ENV: test
 
       - name: Ejecutar tests de integración
         run: cd backend-cv && npm run test:integration
+        env:
+          DB_USER: postgres
+          DB_PASS: postgres
+          DB_NAME: mabc_cv_test
+          DB_HOST: localhost
+          DB_PORT: 5433
+          NODE_ENV: test
 
       - name: Reportar éxito
         if: success()
@@ -61,4 +85,4 @@ jobs:                                                                     # Defi
 
       - name: Reportar error
         if: failure()
-        run: echo "Falla detectada en los tests para Node ${{ matrix.node }} (unitarios o integración)"
+        run: echo "Falla detectada en los tests para Node ${{ matrix.node }}"
