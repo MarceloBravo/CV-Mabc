@@ -52,10 +52,10 @@ jobs:
 
       - name: Esperar que PostgreSQL esté listo
         run: |
-          for i in {1..10}; do
+          for i in {1..30}; do
             nc -z localhost 5433 && echo "PostgreSQL está listo" && exit 0
             echo "Esperando PostgreSQL..."
-            sleep 3
+            sleep 5
           done
           echo "PostgreSQL no respondió" && exit 1
 
