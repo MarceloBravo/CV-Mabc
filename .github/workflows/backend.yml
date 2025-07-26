@@ -56,7 +56,7 @@ jobs:
             nc -z localhost 5433 && echo "PostgreSQL está listo" && exit 0
             echo "Esperando PostgreSQL..."
             sleep 5
-          done
+          done          
           echo "PostgreSQL no respondió" && exit 1
 
       - name: Ejecutar tests unitarios
