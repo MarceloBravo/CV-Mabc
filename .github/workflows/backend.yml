@@ -21,7 +21,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
-          --health-cmd="pg_isready -U postgres -d mabc_cv_test" # Mejorar health check
+          --health-cmd="pg_isready -U postgres -d mabc_cv_test" 
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
