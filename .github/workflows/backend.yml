@@ -52,9 +52,9 @@ jobs:
 
       - name: Esperar que PostgreSQL esté listo
         run: |
-          echo "Esperando que PostgreSQL esté listo en el puerto 5434..."
+          echo "Esperando que PostgreSQL esté listo en el puerto..."
           for i in {1..60}; do
-            if pg_isready -h localhost -p 5434 -U postgres -d mabc_cv_test; then
+            if pg_isready -h localhost -p ${{ secrets.DB_PORT_TEST }} -U postgres -d ${{ secrets.DB_NAME_TEST }}; then
               echo "PostgreSQL está listo."
               exit 0
             fi
