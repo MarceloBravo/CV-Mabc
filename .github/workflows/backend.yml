@@ -76,11 +76,11 @@ jobs:
 
       - name: Ejecutar tests de integración
         env:
-          DB_USER_TEST: postgres
-          DB_PASS_TEST: 123456
-          DB_NAME_TEST: mabc_cv_test
-          DB_HOST_TEST: localhost
-          DB_PORT_TEST: 5434
+          DB_USER_TEST: ${{ secrets.DB_USER_TEST }}
+          DB_PASS_TEST: ${{ secrets.DB_PASS_TEST }}
+          DB_NAME_TEST: ${{ secrets.DB_NAME_TEST }}
+          DB_HOST_TEST: ${{ secrets.DB_HOST_TEST }}
+          DB_PORT_TEST: ${{ secrets.DB_PORT_TEST }}
           NODE_ENV: test
         run: cd backend-cv && npm run test:integration
 
