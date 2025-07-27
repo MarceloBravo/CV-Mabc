@@ -65,7 +65,6 @@ jobs:
           exit 1
 
       - name: Ejecutar tests unitarios
-        run: cd backend-cv && npm run test:unit
         env:
           DB_USER: postgres
           DB_PASS: 123456
@@ -73,9 +72,9 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5434
           NODE_ENV: test
+        run: cd backend-cv && npm run test:unit
 
       - name: Ejecutar tests de integración
-        run: cd backend-cv && npm run test:integration
         env:
           DB_USER: postgres
           DB_PASS: 123456
@@ -83,6 +82,7 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5434
           NODE_ENV: test
+        run: cd backend-cv && npm run test:integration
 
       - name: Reportar éxito
         if: success()
